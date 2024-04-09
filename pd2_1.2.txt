@@ -1,0 +1,78 @@
+% Fakty
+f(maria, anna).
+f(maria, piotr).
+f(jan, anna).
+f(jan, piotr).
+f(anna, kasia).
+f(anna, tomek).
+f(piotr, bartek).
+f(tomek, michal).
+f(bartek, kuba).
+f(kasia, oliwia).
+
+% Fakty o płci
+kobieta(maria).
+kobieta(anna).
+kobieta(kasia).
+kobieta(oliwia).
+mezczyzna(jan).
+mezczyzna(piotr).
+mezczyzna(tomek).
+mezczyzna(bartek).
+mezczyzna(michal).
+mezczyzna(kuba).
+
+malzenstwo(jan, maria)
+
+% Funkcja rodzeństwo
+rodzenstwo(X, Y) :-
+    f(X, Rodzic),
+    f(Y, Rodzic),
+    X \= Y.
+
+% Funkcja kuzyn
+kuzyn(X, Y) :-
+    f(X, RodzicX),
+    f(Y, RodzicY),
+    rodzenstwo(RodzicX, RodzicY),
+    X \= Y.
+
+% Funkcja współdziadkowie
+wspoldziadkowie(X, Y) :-
+    f(X, RodzicX),
+    f(Y, RodzicY),
+    f(RodzicX, RodzicZ),
+    f(RodzicY, RodzicZ),
+    X \= Y.
+
+% Funkcja macocha
+macocha(X, Y) :-
+    f(X, RodzicX),
+    f(Y, RodzicY),
+    kobieta(X),
+    \+ (f(Y, X), kobieta(RodzicX), RodzicX \= X).
+
+% Funkcja przyrodnie rodzeństwo
+przyrodnie_rodzenstwo(X, Y) :-
+    f(X, RodzicX),
+    f(Y, RodzicY),
+    f(RodzicX, RodzicY),
+    X \= Y.
+
+% Funkcja szwagier (brat męża lub brat żony)
+szwagier(X, Y) :-
+    malzenstwo(X, Z),
+    rodzenstwo(Z, Y),
+    mezczyzna(X). 
+
+% Funkcja wujek
+wujek(X, Y) :-
+    f(Y, Rodzic),
+    f(Rodzic, BratX),
+    mezczyzna(BratX),
+    X \= Rodzic,
+    X \= Y.
+
+% Funkcja dziwne_rodzenstwo (przyrodnie rodzeństwo)
+dziwne_rodzenstwo(X, Y) :-
+    przyrodnie_rodzenstwo(X, Y).

@@ -1,0 +1,82 @@
+% Fakty
+osoba(jan).
+osoba(anna).
+osoba(piotr).
+osoba(maria).
+osoba(bartek).
+osoba(tomek).
+osoba(michal).
+osoba(kasia).
+osoba(oliwia).
+osoba(kuba).
+
+% Osoba X jest rodzicem osoby Y.
+rodzic(anna, kasia).
+rodzic(jan, anna).
+rodzic(jan, piotr).
+rodzic(maria, anna).
+rodzic(maria, piotr).
+rodzic(piotr, bartek).
+
+rodzic(anna, tomek).
+rodzic(tomek, michal).
+rodzic(bartek, kuba).
+rodzic(jan, kasia).
+rodzic(kasia, oliwia).
+
+
+% Jan i Piotr są mężczyznami.
+mezczyzna(jan).
+mezczyzna(piotr).
+
+% Maria, Anna, Kasia, i Oliwia są kobietami.
+kobieta(maria).
+kobieta(anna).
+kobieta(kasia).
+kobieta(oliwia).
+
+
+
+
+
+% Kobieta jest osobą, która nie jest mężczyzną.
+kobieta(X) :- osoba(X), \+ mezczyzna(X).
+
+% Ojciec jest rodzicem, który jest mężczyzną.
+ojciec(X, Y) :- rodzic(X, Y), mezczyzna(X).
+
+% Matka jest rodzicem, który jest kobietą.
+matka(X, Y) :- rodzic(X, Y), kobieta(X).
+
+% Córka jest osobą, która jest kobietą i ma rodzica.
+corka(X, Y) :- kobieta(X), rodzic(Y, X).
+
+% Brat rodzeństwo to mężczyzna, który ma wspólnego rodzica z osobą Y, ale nie jest tą osobą.
+brat_rodzony(X, Y) :- mezczyzna(X), rodzic(Z, X), rodzic(Z, Y), X \= Y.
+
+% Brat przyrodni to mężczyzna, który ma wspólnego rodzica z osobą Y, ale nie jest tą osobą i rodzicami są różne osoby.
+brat_przyrodni(X, Y) :- mezczyzna(X), rodzic(Z, X), rodzic(W, Y), X \= Y, Z \= W.
+
+% Kuzyn to dziecko rodzica osoby X, które nie jest jej bratem, a osoba Y jest dzieckiem innego rodzica.
+kuzyn(X, Y) :- rodzic(Z, X), rodzic(W, Y), X \= Y, \+ brat_rodzony(X, Y), \+ brat_przyrodni(X, Y).
+
+% Dziadek od strony ojca to rodzic ojca osoby Y.
+dziadek_od_strony_ojca(X, Y) :- mezczyzna(X), rodzic(X, Z), rodzic(Z, Y), mezczyzna(Z).
+
+% Dziadek od strony matki to rodzic matki osoby Y.
+dziadek_od_strony_matki(X, Y) :- mezczyzna(X), matka(Z, Y), rodzic(X, Z).
+
+% Dziadek to ojciec rodzica osoby Y.
+dziadek(X, Y) :- dziadek_od_strony_ojca(X, Y); dziadek_od_strony_matki(X, Y).
+
+% Babcia to matka rodzica osoby Y.
+babcia(X, Y) :- rodzic(Z, Y), matka(X, Z).
+
+% Wnuczka to osoba, której matka lub ojciec jest rodzicem osoby X.
+wnuczka(X, Y) :- babcia(X, Y), kobieta(Y).
+
+% Przodek do drugiego pokolenia wstecz to rodzic osoby Y, który jest rodzicem osoby Z.
+przodek_do2pokolenia_wstecz(X, Y) :- rodzic(X, Z), rodzic(Z, Y).
+
+% Przodek do trzeciego pokolenia wstecz to rodzic osoby Y, który jest rodzicem osoby Z, a ta osoba ma rodzica W.
+przodek_do3pokolenia_wstecz(X, Y) :- rodzic(X, Z), przodek_do2pokolenia_wstecz(Z, Y).
